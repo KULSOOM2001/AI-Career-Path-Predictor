@@ -1,4 +1,3 @@
-```markdown
 # 🤖 AI Career Path Predictor
 
 **95% Accuracy | Decision Tree | Flask Web App | Dark/Light Theme**
@@ -14,6 +13,7 @@
 AI Career Path Predictor recommends tech career paths based on student skills using Machine Learning.
 
 ### Input Features
+
 - Favourite Subject (Mathematics, Programming, Science, Design, Networking, Business)
 - Coding Interest (Low/Medium/High)
 - Math Skill (Low/Medium/High)
@@ -22,6 +22,7 @@ AI Career Path Predictor recommends tech career paths based on student skills us
 - Problem Solving Skill (Low/Medium/High)
 
 ### Career Paths
+
 1. Artificial Intelligence 🤖
 2. Cybersecurity 🔒
 3. Data Science 📊
@@ -73,9 +74,12 @@ Result Page (result.html)
 | Software Engineering | 87% | 91% | 89% |
 | Web Development | 85% | 85% | 85% |
 
-### Overall Accuracy: **95.0%**
+### Overall Accuracy
+
+**95.0%**
 
 ### Model Comparison
+
 - Decision Tree: 95.0% (Best)
 - KNN: 81.1%
 
@@ -114,18 +118,11 @@ AI-Career-Path-Predictor/
 ## Installation
 
 ```bash
-# Clone repository
 git clone https://github.com/KULSOOM2001/AI-Career-Path-Predictor.git
 cd AI-Career-Path-Predictor
-
-# Install dependencies
 pip install flask pandas numpy scikit-learn
-
-# Train model
 cd model
 python train_model.py
-
-# Run app
 cd ..
 python app.py
 ```
@@ -138,7 +135,7 @@ Open: http://127.0.0.1:5000
 
 1. Fill the skill assessment form
 2. Click "Predict My Career"
-3. View your career match with confidence score, key skills, job roles, and probability distribution
+3. View your career match
 
 ---
 
@@ -158,8 +155,6 @@ Open: http://127.0.0.1:5000
 ---
 
 ⭐ Star this repository if you found it helpful!
-
----
-
-⭐ Star this repository if you found it helpful!
 ```
+
+Copy this exact code into `README.md` file and push again. It will render properly on GitHub.
