@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Career Match — CareerAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="noise"></div>
+
+  <header>
+    <div class="logo">
+      <span class="logo-dot"></span>
+      <span>CareerAI</span>
+    </div>
+    <div class="header-right">
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+      <a href="/" class="back-link">← Try Again</a>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="result-hero">
+      <p class="result-label mono">Your Career Match</p>
+      <div class="result-icon">{{ info.icon }}</div>
+      <h1 class="result-career gradient-text">{{ career }}</h1>
+      <p class="result-desc">{{ info.desc }}</p>
+
+      {% if confidence %}
+      <div class="confidence-section">
+        <div class="confidence-badge">
+          <span class="mono">{{ confidence }}%</span>
+          <span>model confidence</span>
+        </div>
+        <!-- Animated Confidence Progress Bar -->
+        <div class="confidence-progress-wrap">
+          <div class="confidence-progress-bar" style="width: 0%" data-width="{{ confidence }}"></div>
+        </div>
+        <p class="confidence-note">Model is {{ confidence }}% confident in this recommendation</p>
+      </div>
+      {% endif %}
+    </section>
+
+    <div class="details-grid">
+
+      <div class="detail-card">
+        <h3 class="mono">Key Skills to Build</h3>
+        <ul class="tag-list">
+          {% for skill in info.skills %}
+          <li class="tag">{{ skill }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="detail-card">
+        <h3 class="mono">Possible Job Roles</h3>
+        <ul class="tag-list">
+          {% for role in info.roles %}
+          <li class="tag tag-outline">{{ role }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="detail-card">
+        <h3 class="mono">Your Profile Summary</h3>
+        <table class="input-table">
+          {% for key, val in inputs.items() %}
+          <tr>
+            <td>{{ key.replace('_', ' ').title() }}</td>
+            <td class="mono {% if val == 'High' %}val-high{% elif val == 'Low' %}val-low{% else %}val-mid{% endif %}">
+              {{ val }}
+             </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+
+      {% if all_probs %}
+      <div class="detail-card">
+        <h3 class="mono">All Career Scores</h3>
+        {% for c, p in all_probs|dictsort(by='value', reverse=True) %}
+        <div class="prob-row">
+          <span class="prob-label {% if c == career %}prob-winner{% endif %}">{{ c }}</span>
+          <div class="prob-bar-wrap">
+            <div class="prob-bar {% if c == career %}prob-bar-active{% endif %}" style="width: {{ p }}%"></div>
+          </div>
+          <span class="mono prob-val">{{ p }}%</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if feature_importance %}
+      <div class="detail-card feature-importance-card">
+        <h3 class="mono">🎯 Feature Importance</h3>
+        <p class="feature-note">Which skills matter most for prediction?</p>
+        {% for feature, importance in feature_importance %}
+        <div class="importance-row">
+          <span class="importance-label">{{ feature }}</span>
+          <div class="importance-bar-wrap">
+            <div class="importance-bar" style="width: 0%" data-width="{{ importance * 100 }}"></div>
+          </div>
+          <span class="mono importance-val">{{ (importance * 100)|round(1) }}%</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+    </div>
+
+    <div class="model-card">
+      <span class="mono">Model: {{ model_name }}</span>
+      <span class="divider-v"></span>
+      <span class="mono">Accuracy: {{ accuracy }}%</span>
+      <span class="divider-v"></span>
+      <span class="mono">Dataset: 1,800 samples</span>
+      <span class="divider-v"></span>
+      <span class="mono">Features: 6</span>
+    </div>
+
+    <a href="/" class="predict-again-btn">← Predict Again</a>
+
+  </main>
+
+  <footer>
+    <span>Kulsoom Jawed (2312151) &amp; Anchal Bai (2312145)</span>
+    <span class="mono">Submitted to: Qamber Ali &nbsp;·&nbsp; AI Course</span>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Animate probability bars
+      document.querySelectorAll('.prob-bar').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => { bar.style.width = w; }, 100);
+      });
+      
+      // Animate importance bars
+      document.querySelectorAll('.importance-bar').forEach(bar => {
+        const targetWidth = bar.getAttribute('data-width');
+        setTimeout(() => { bar.style.width = targetWidth + '%'; }, 200);
+      });
+      
+      // Animate confidence progress bar
+      const confidenceBar = document.querySelector('.confidence-progress-bar');
+      if (confidenceBar) {
+        const targetWidth = confidenceBar.getAttribute('data-width');
+        setTimeout(() => { confidenceBar.style.width = targetWidth + '%'; }, 300);
+      }
+    });
+
+    // ===== DARK/LIGHT THEME TOGGLE =====
+    const themeToggle = document.getElementById('themeToggle');
+    
+    // Check for saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+      themeToggle.textContent = '☀️';
+    }
+    
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      
+      if (document.body.classList.contains('light-theme')) {
+        localStorage.setItem('theme', 'light');
+        themeToggle.textContent = '☀️';
+      } else {
+        localStorage.setItem('theme', 'dark');
+        themeToggle.textContent = '🌙';
+      }
+    });
+  </script>
+
+</body>
+</html>

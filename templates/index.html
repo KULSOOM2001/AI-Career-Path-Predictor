@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Career Path Predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="noise"></div>
+
+  <header>
+  <div class="logo">
+    <span class="logo-dot"></span>
+    <span>CareerAI</span>
+  </div>
+  <div class="header-right">
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+  </div>
+  </header>  
+
+  <main>
+    <section class="hero">
+      <div class="hero-badge">Machine Learning Powered</div>
+      <h1>Discover Your<br><span class="gradient-text">CS Career Path</span></h1>
+      <p class="hero-sub">
+        Answer 6 quick questions. Our Decision Tree &amp; KNN models
+        analyse your skills and recommend the best CS specialisation for you.
+      </p>
+    </section>
+
+    {% if error %}
+    <div class="alert"><span>⚠</span> {{ error }}</div>
+    {% endif %}
+
+    <form action="/predict" method="POST" class="form-card" id="mainForm">
+
+      <div class="form-header">
+        <span class="mono">01 — Your Profile</span>
+        <span class="form-steps">6 questions</span>
+      </div>
+
+      <div class="fields-grid">
+
+        <div class="field-group full">
+          <label for="favourite_subject">
+            Favourite Subject
+            <span class="label-hint">What do you enjoy studying the most?</span>
+          </label>
+          <div class="select-wrap">
+            <select name="favourite_subject" id="favourite_subject" required>
+              <option value="" disabled selected>Select a subject</option>
+              <option value="Programming">Programming</option>
+              <option value="Networking">Networking</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Design">Design</option>
+              <option value="Statistics">Statistics</option>
+            </select>
+            <span class="select-arrow">▾</span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Coding Interest</label>
+          <div class="btn-group" data-name="coding_interest">
+            <button type="button" class="opt-btn" data-val="High">High</button>
+            <button type="button" class="opt-btn" data-val="Medium">Medium</button>
+            <button type="button" class="opt-btn" data-val="Low">Low</button>
+          </div>
+          <input type="hidden" name="coding_interest" class="hidden-input" required>
+        </div>
+
+        <div class="field-group">
+          <label>Math Skill</label>
+          <div class="btn-group" data-name="math_skill">
+            <button type="button" class="opt-btn" data-val="High">High</button>
+            <button type="button" class="opt-btn" data-val="Medium">Medium</button>
+            <button type="button" class="opt-btn" data-val="Low">Low</button>
+          </div>
+          <input type="hidden" name="math_skill" class="hidden-input" required>
+        </div>
+
+        <div class="field-group">
+          <label>Creativity Level</label>
+          <div class="btn-group" data-name="creativity_level">
+            <button type="button" class="opt-btn" data-val="High">High</button>
+            <button type="button" class="opt-btn" data-val="Medium">Medium</button>
+            <button type="button" class="opt-btn" data-val="Low">Low</button>
+          </div>
+          <input type="hidden" name="creativity_level" class="hidden-input" required>
+        </div>
+
+        <div class="field-group">
+          <label>Communication Skill</label>
+          <div class="btn-group" data-name="communication_skill">
+            <button type="button" class="opt-btn" data-val="High">High</button>
+            <button type="button" class="opt-btn" data-val="Medium">Medium</button>
+            <button type="button" class="opt-btn" data-val="Low">Low</button>
+          </div>
+          <input type="hidden" name="communication_skill" class="hidden-input" required>
+        </div>
+
+        <div class="field-group">
+          <label>Problem-Solving Skill</label>
+          <div class="btn-group" data-name="problem_solving_skill">
+            <button type="button" class="opt-btn" data-val="High">High</button>
+            <button type="button" class="opt-btn" data-val="Medium">Medium</button>
+            <button type="button" class="opt-btn" data-val="Low">Low</button>
+          </div>
+          <input type="hidden" name="problem_solving_skill" class="hidden-input" required>
+        </div>
+
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <span class="btn-text">Predict My Career Path</span>
+        <span class="btn-arrow">→</span>
+        <span class="btn-loading" style="display:none">Analysing…</span>
+      </button>
+
+    </form>
+
+    <div class="info-strip">
+      <div class="info-item">
+        <span class="mono">1,800</span>
+        <span>Training samples</span>
+      </div>
+      <div class="divider-v"></div>
+      <div class="info-item">
+        <span class="mono">5</span>
+        <span>Career domains</span>
+      </div>
+      <div class="divider-v"></div>
+      <div class="info-item">
+        <span class="mono">DT + KNN</span>
+        <span>Algorithms</span>
+      </div>
+      <div class="divider-v"></div>
+      <div class="info-item">
+        <span class="mono">&lt; 1s</span>
+        <span>Real-time prediction</span>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <span>Kulsoom Jawed (2312151) &amp; Anchal Bai (2312145)</span>
+    <span class="mono">Submitted to: Qamber Ali &nbsp;·&nbsp; AI Course</span>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.btn-group').forEach(group => {
+      const name = group.dataset.name;
+      const hidden = document.querySelector(`input[name="${name}"]`);
+      group.querySelectorAll('.opt-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          group.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          hidden.value = btn.dataset.val;
+        });
+      });
+    });
+
+    document.getElementById('mainForm').addEventListener('submit', function(e) {
+      const hiddens = document.querySelectorAll('.hidden-input');
+      for (let h of hiddens) {
+        if (!h.value) {
+          e.preventDefault();
+          h.closest('.field-group').querySelector('.btn-group').style.outline = '2px solid #e05c2a';
+          return;
+        }
+      }
+      const btn = document.getElementById('submitBtn');
+      btn.querySelector('.btn-text').style.display = 'none';
+      btn.querySelector('.btn-arrow').style.display = 'none';
+      btn.querySelector('.btn-loading').style.display = 'inline';
+      btn.disabled = true;
+    });
+    // Theme Toggle
+  const themeToggle = document.getElementById('themeToggle');
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+    themeToggle.textContent = '☀️';
+  }
+  
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('light-theme');
+    if (document.body.classList.contains('light-theme')) {
+      localStorage.setItem('theme', 'light');
+      themeToggle.textContent = '☀️';
+    } else {
+      localStorage.setItem('theme', 'dark');
+      themeToggle.textContent = '🌙';
+    }
+  });
+  </script>
+
+</body>
+</html>
