@@ -59,22 +59,13 @@ def predict():
     model_name = data['model_name']
     accuracy = round(data['accuracy'] * 100, 2)
     
-    # Get form values
+    # Get form values and encode 
     form_data = {}
-    for col in feature_cols:
-        val = request.form.get(col)
-        form_data[col] = val
-    
-    # Encode input
     encoded_input = []
     for col in feature_cols:
         val = request.form.get(col)
-        # Handle unseen labels
-        try:
-            encoded_val = encoders[col].transform([val])[0]
-        except ValueError:
-            # If value not seen during training, use the most common or default
-            encoded_val = 1  # Default to Medium
+        form_data[col] = val # for displaying the fields of form
+        encoded_val = encoders[col].transform([val])[0] # to encode the fields 
         encoded_input.append(encoded_val)
     
     # Predict
@@ -116,4 +107,4 @@ def predict():
                          feature_importance=feature_importance)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True) # ye flask ko start krne ki command hai
